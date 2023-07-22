@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "common.regex.mail",
+    "type": "java.lang.String",
+    "description": "A description for 'common.regex.mail'"
+  },
+  {
+    "name": "common.regex.password",
+    "type": "java.lang.String",
+    "description": "A description for 'comon.regex.password'"
+  }
+]}
