@@ -5,8 +5,11 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 import lombok.Data;
 
@@ -35,7 +38,9 @@ public class UserDao {
 
 	@Column(name = "LASTLOGIN_DATE", nullable = false)
 	private String last_login;
-
+	
+	@Lob
+	@Type(type = "org.hibernate.type.MaterializedBlobType")
 	@Column(name = "TOKEN", nullable = false)
 	private byte[] token;
 

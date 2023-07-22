@@ -33,6 +33,7 @@ public class UserController {
 			response.setCode(HttpStatus.OK.value() + "");
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value() + "");
 			response.setError("Error al registrar : " + e.getMessage());
 		}

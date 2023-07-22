@@ -31,6 +31,7 @@ public class LoginController {
 			usuario.setCode(HttpStatus.OK.value() + "");
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			usuario.setCode(HttpStatus.FORBIDDEN.value() + "");
 			usuario.setError("Error en login : " + e.getMessage());
 		}

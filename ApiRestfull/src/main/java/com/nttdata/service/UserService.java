@@ -209,7 +209,7 @@ public class UserService {
 		String token = jwtTokenService.getJWTToken(user.getUuid());
 		user.setToken(token.getBytes(StandardCharsets.UTF_8));
 		// luego salvamos el token en bd
-		repository.save(user);
+		//repository.save(user);
 
 		return userToData(user);
 	}
