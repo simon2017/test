@@ -11,4 +11,5 @@ public interface IUserRepository extends JpaRepository<UserDao, String> {
 
 	@Query("select u FROM UserDao u WHERE u.email = ?1")
 	Optional<UserDao> findByEmail(String email);
+	
 }

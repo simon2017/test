@@ -9,8 +9,6 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Type;
-
 import lombok.Data;
 
 @Data
@@ -20,8 +18,8 @@ public class UserDao {
 	@Id
 	@Column(name = "UUID", nullable = false)
 	private String uuid;
-
-	@Column(name = "EMAIL", nullable = false)
+	
+	@Column(name = "EMAIL", nullable = false, unique = true)
 	private String email;
 
 	@Column(name = "NAME", nullable = false)
@@ -40,9 +38,8 @@ public class UserDao {
 	private String last_login;
 	
 	@Lob
-	@Type(type = "org.hibernate.type.MaterializedBlobType")
-	@Column(name = "TOKEN", nullable = false)
-	private byte[] token;
+	@Column(name = "TOKEN", nullable = false, length=16777216)
+	private String token;
 
 	@Column(name = "IS_ACTIVE", nullable = false)
 	private Boolean isActive;

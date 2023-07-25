@@ -49,7 +49,7 @@ public class UserController {
 		try {
 			System.out.println(userData);
 			userData.setUuid(userId);
-			response = userService.update(userData);
+			response = userService.updateByUUID(userData);
 			response.setCode(HttpStatus.OK.value() + "");
 		} catch (Exception e) {
 			response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value() + "");
@@ -57,23 +57,5 @@ public class UserController {
 		}
 
 		return response;
-	}
-	
-	@PostMapping("/updateE/{email}")
-	@ResponseStatus(HttpStatus.OK)
-	public RegisterResponse updateByEmail(@PathVariable String email, @RequestBody UserData userData) {
-		RegisterResponse response = new RegisterResponse();
-
-		try {
-			System.out.println(userData);
-			userData.setEmail(email);
-			response = userService.updateByEmail(userData);
-			response.setCode(HttpStatus.OK.value() + "");
-		} catch (Exception e) {
-			response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value() + "");
-			response.setError("Error al actualizar : " + e.getMessage());
-		}
-
-		return response;
-	}
+	}	
 }

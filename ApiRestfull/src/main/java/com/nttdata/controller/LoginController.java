@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nttdata.dto.UserCredentials;
 import com.nttdata.dto.UserData;
-import com.nttdata.service.JWTTokenService;
 import com.nttdata.service.UserService;
 
 @RestController
@@ -20,8 +19,7 @@ public class LoginController {
 
 	@Autowired
 	private UserService userService;
-	@Autowired
-	JWTTokenService jwtTokenService;
+
 
 	@PostMapping("/login")
 	public UserData login(@RequestBody UserCredentials userCredentials) {
