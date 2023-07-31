@@ -21,9 +21,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.nttdata.service.JWTTokenService;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 
 
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
@@ -42,16 +39,13 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 		try {
 			if (existeJWTToken(request, response)) {
 				Claims claims = tokenService.validateToken(request);
-				if (claims.get("authorities") != null && claims.getIssuer().equals(ISSUER)) {
-					setUpSpringAuthentication(claims);
-				} else {
-					SecurityContextHolder.clearContext();
-				}
+				setUpSpringAuthentication(claims);
 			}
 			else
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			chain.doFilter(request, response);
-		} catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException e) {
+		} catch (Exception e) {
+			SecurityContextHolder.clearContext();
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
 			return;

@@ -50,13 +50,21 @@ public class JWTTokenService {
 	 * 
 	 * @param request
 	 * @return
+	 * @throws Exception 
 	 */
-	public Claims validateToken(HttpServletRequest request) {
+	public Claims validateToken(HttpServletRequest request) throws Exception {
 		String jwtToken = request.getHeader(JWTAuthorizationFilter.HEADER).replace(JWTAuthorizationFilter.PREFIX, "");
 		byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
 
-		return Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(keyBytes)).build().parseClaimsJws(jwtToken)
+		Claims claims= Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(keyBytes)).build().parseClaimsJws(jwtToken)
 				.getBody();
+		if (claims.get("authorities") != null 
+			&& claims.getIssuer().equals(JWTAuthorizationFilter.ISSUER) 
+				) {
+			return claims;
+		}
+		else
+			throw new Exception("Invalid token");
 	}
 
 }
