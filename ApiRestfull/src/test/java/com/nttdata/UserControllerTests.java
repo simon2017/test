@@ -42,42 +42,42 @@ public class UserControllerTests {
 
 	}
 
-	@Test
-	void registerUser_assertOK() {
-		
+	/**
+	 * Genera usuario dummy
+	 * @return
+	 */
+	private UserData getDummyUser(String name, String email) {
 		Phone phone = new Phone();
 		phone.setNumber("999999999");
 		phone.setCitycode(45);
 		phone.setCountrycode(56);
-		
+
 		UserData data = new UserData();
 
-		data.setEmail("ss@sss.com");
-		data.setName("test");
+		data.setEmail(email);
+		data.setName(name);
 		data.setPassword("Sssimon12");
 		data.setPhones(Arrays.asList(phone));
 
-		RegisterResponse response = controller.register(data);
-		assertThat(response.getCode()).isEqualTo(HttpStatus.OK.value()+"");
+		return data;
 	}
-	
+
+	@Test
+	void registerUser_assertOK() {
+		RegisterResponse response = controller.register(getDummyUser("test_OK","ssOK@sss.com"));
+		assertThat(response.getCode()).isEqualTo(HttpStatus.OK.value() + "");
+	}
+
 	@Test
 	void registerUser_assertKO() {
+		UserData userA=getDummyUser("test_KO_A","ssKO@sss.com");
+		UserData userB=getDummyUser("test_KO_B","ssKO@sss.com");
+		userB.setName(userA.getName() + "_B");
 		
-		Phone phone = new Phone();
-		phone.setNumber("999999999");
-		phone.setCitycode(45);
-		phone.setCountrycode(56);
-		
-		UserData data = new UserData();
-
-		data.setEmail("");
-		data.setName("");
-		data.setPassword("");
-		data.setPhones(Arrays.asList(phone));
-
-		RegisterResponse response = controller.register(data);
-		assertThat(response.getCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value() + "");
+		//Primero guardamos data de usuario A, se espera OK
+		assertThat(controller.register(userA).getCode()).isEqualTo(HttpStatus.OK.value() + "");	
+		//Luego guardamos data de usuario B, se espera KO por correo duplicado
+		assertThat(controller.register(userB).getCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value() + "");
 	}
 
 }
