@@ -1,6 +1,5 @@
 package com.nttdata.service;
 
-import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,6 +17,7 @@ import com.nttdata.dto.Phone;
 import com.nttdata.dto.RegisterResponse;
 import com.nttdata.dto.UserCredentials;
 import com.nttdata.dto.UserData;
+import com.nttdata.dto.UserException;
 import com.nttdata.mapper.PhoneDao;
 import com.nttdata.mapper.UserDao;
 import com.nttdata.repository.IPhoneRepository;
@@ -47,24 +47,24 @@ public class UserService {
 	 * @return
 	 * @throws Exception
 	 */
-	public UserData authenticate(UserCredentials userCredentials) throws Exception {
+	public UserData authenticate(UserCredentials userCredentials) throws UserException {
 		if (userCredentials.getEmail() == null
 				|| (userCredentials.getEmail() != null && userCredentials.getEmail().isEmpty()))
-			throw new Exception("Email vacio o nulo");
+			throw new UserException("Email vacio o nulo");
 
 		if (userCredentials.getPassword() == null
 				|| (userCredentials.getPassword() != null && userCredentials.getPassword().isEmpty()))
-			throw new Exception("Password vacio o nulo");
+			throw new UserException("Password vacio o nulo");
 
 		Optional<UserDao> optional = repository.findByEmail(userCredentials.getEmail());
 		if (!optional.isPresent())
-			throw new Exception("Usuario no existe");
+			throw new UserException("Usuario no existe");
 
 		UserDao user = optional.get();
 
 		// validar credencial
 		if (userCredentials.getPassword().equals(user.getPassword()) == false)
-			throw new Exception("Error de login, contraseña incorrecta");
+			throw new UserException("Error de login, contraseña incorrecta");
 
 		Date date = new Date();
 		user.setLast_login(formatter.format(date));
@@ -82,7 +82,7 @@ public class UserService {
 	 * @return
 	 * @throws Exception
 	 */
-	public RegisterResponse register(UserData userData) throws Exception {
+	public RegisterResponse register(UserData userData)  throws UserException{
 		RegisterResponse rr = null;
 
 		// Si caso el correo conste en la base de datos, deberá retornar un error "El
@@ -91,14 +91,11 @@ public class UserService {
 		// Reglas ->
 		if (userData.getEmail() == null
 				|| (userData.getEmail() != null && !Pattern.matches(MAIL_RGX, userData.getEmail())))
-			throw new Exception("Correo no cumple con Regex");
-
-		if (repository.findByEmail(userData.getEmail()).isPresent())
-			throw new Exception("El correo ya registrado");
+			throw new UserException("Correo no cumple con Regex");
 
 		if (userData.getPassword() == null
 				|| (userData.getPassword() != null && !Pattern.matches(PSW_RGX, userData.getPassword())))
-			throw new Exception("Password no cumple con Regex");
+			throw new UserException("Password no cumple con Regex");
 		// <-
 
 		UserDao userDao = new UserDao();
@@ -217,9 +214,8 @@ public class UserService {
 	 * 
 	 * @param userDao
 	 * @return
-	 * @throws UnsupportedEncodingException
 	 */
-	private RegisterResponse mapResponse(UserDao userDao) throws UnsupportedEncodingException {
+	private RegisterResponse mapResponse(UserDao userDao) {
 		RegisterResponse rr = new RegisterResponse();
 
 		rr.setCreated(userDao.getCreated());

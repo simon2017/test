@@ -6,6 +6,6 @@ import lombok.Data;
 public abstract class Message {
 
 	private String error;
-	private String code;
+	private int code;
 	private String token;
 }
