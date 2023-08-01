@@ -4,17 +4,22 @@
 package com.nttdata;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nttdata.controller.UserController;
@@ -104,16 +109,46 @@ public class UserControllerTests {
 
 	@Test
 	void registerUser_invalidPassword() {
-		UserData user = getDummyUser("test_pswd", "ss_email@sss.com","password");
-		//Esperamos KO por formato de password invalido
-		assertThat(controller.register(user).getCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value() + "");
-	}
-	
-	@Test
-	void registerUser_invalidEmail() {
-		UserData user = getDummyUser("test_email", "ss_emailsss","ss@sss.com");
-		//Esperamos KO por formato de correo invalido
+		UserData user = getDummyUser("test_pswd", "ss_email@sss.com", "password");
+		// Esperamos KO por formato de password invalido
 		assertThat(controller.register(user).getCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value() + "");
 	}
 
+	@Test
+	void registerUser_invalidEmail() {
+		UserData user = getDummyUser("test_email", "ss_emailsss", "ss@sss.com");
+		// Esperamos KO por formato de correo invalido
+		assertThat(controller.register(user).getCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value() + "");
+	}
+
+	@Test
+	void updateUser_assertOK(){
+		//Primero almacenamos el usuario dummy
+		RegisterResponse register = controller.register(getDummyUser("dummy","update@dummy.com"));
+		
+		//actualizamos el nombre del usuario
+		register.setName("User_updated");
+		
+		//y luego efectuamos el request al servicio update
+		try {			
+		
+		MvcResult result = mockMvc
+					.perform(post("http://localhost:8080/user/update/" + register.getUuid())
+					.header(HttpHeaders.AUTHORIZATION, register.getToken())
+					.accept(MediaType.APPLICATION_JSON)
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
+					.content(objectMapper.writer().writeValueAsString((UserData) register)))
+				.andExpect(status().isOk()).andReturn();
+		
+		//recuperamos la respuesta
+		RegisterResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), RegisterResponse.class);
+		
+		//y validamos que el dato se haya actualizado
+		assertThat(response.getName()).isEqualTo("User_updated");
+		
+		}catch (Exception e) {
+			//si generó fallo en el request fallamos el test
+			fail("Exception "+e.toString());
+		}
+	}
 }
