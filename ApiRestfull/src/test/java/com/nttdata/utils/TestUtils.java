@@ -20,6 +20,15 @@ public  class TestUtils {
 	public static UserData getDummyUser() {
 		return getDummyUser("test", "test@test.com", "Tttest12");
 	}
+	
+	/**
+	 * Genera usuario dummy
+	 * 
+	 * @return
+	 */
+	public static UserData getDummyUser(String name) {
+		return getDummyUser(name, "test@test.com");
+	}
 
 	/**
 	 * Genera usuario dummy

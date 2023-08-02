@@ -31,7 +31,6 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	public static final String ISSUER="NTTDATA";
 	
 	private JWTTokenService tokenService=BeanUtils.instantiateClass(JWTTokenService.class);
-	//public static final SecretKey KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -41,8 +40,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 				Claims claims = tokenService.validateToken(request);
 				setUpSpringAuthentication(claims);
 			}
-			else
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			
 			chain.doFilter(request, response);
 		} catch (Exception e) {
 			SecurityContextHolder.clearContext();
